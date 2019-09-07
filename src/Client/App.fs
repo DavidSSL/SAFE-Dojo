@@ -10,6 +10,8 @@ open Fable.Recharts
 open Fable.Recharts.Props
 open Fulma
 open Shared
+open Shared
+open Shared
 open Thoth.Json
 
 /// The different elements of the completed report.
@@ -65,11 +67,15 @@ let update msg model =
             Report = Some response
             ServerState = Idle }, Cmd.none
     | _, PostcodeChanged p ->
-        { model with
-            Postcode = p
-            (* Task 2.2 Validation. Use the Validation.validatePostcode function to implement client-side form validation.
-               Note that the validation is the same shared code that runs on the server! *)
-            ValidationError = None }, Cmd.none
+            { model with
+                Postcode = p
+                (* Task 2.2 Validation. Use the Validation.validatePostcode function to implement client-side form validation.
+                   Note that the validation is the same shared code that runs on the server! *)
+                ValidationError =
+                    if Validation.isValidPostcode p then
+                        None
+                    else
+                        Some "Please enter a valid postcode" }, Cmd.none
     | _, ErrorMsg e -> { model with ServerState = ServerError e.Message }, Cmd.none
 
 [<AutoOpen>]
