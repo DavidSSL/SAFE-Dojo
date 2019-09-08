@@ -59,5 +59,5 @@ let apiRouter = router {
     getf "/crime/%s" getCrimeReport
 
     (* Task 4.2 WEATHER: Hook up the weather endpoint to the getWeather function. *)
-
+    getf "/weather/%s" getWeather
     }
