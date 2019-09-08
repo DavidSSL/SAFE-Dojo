@@ -10,8 +10,6 @@ open Fable.Recharts
 open Fable.Recharts.Props
 open Fulma
 open Shared
-open Shared
-open Shared
 open Thoth.Json
 
 /// The different elements of the completed report.
@@ -35,6 +33,7 @@ type Msg =
     | PostcodeChanged of string
     | GotReport of Report
     | ErrorMsg of exn
+    | Clear
 
 /// The init function is called to start the message pump with an initial view.
 let init () =
@@ -78,6 +77,7 @@ let update msg model =
                     else
                         Some "Please enter a valid postcode" }, Cmd.none
     | _, ErrorMsg e -> { model with ServerState = ServerError e.Message }, Cmd.none
+    | _, Clear -> init()
 
 [<AutoOpen>]
 module ViewParts =
@@ -198,6 +198,17 @@ let view model dispatch =
                                       Button.Disabled (model.ValidationError.IsSome)
                                       Button.IsLoading (model.ServerState = ServerState.Loading) ]
                                     [ str "Submit" ]
+                            ]
+                        ]
+                        Level.right [] [
+                            Level.item [] [
+                                Button.button
+                                    [ Button.IsFullWidth
+                                      Button.Color IsPrimary
+                                      Button.OnClick (fun _ -> dispatch Clear)
+//                                      Button.Disabled (model.ValidationError.IsSome)
+                                      Button.IsLoading (model.ServerState = ServerState.Loading) ]
+                                    [ str "Clear" ]
                             ]
                         ]
                     ]
