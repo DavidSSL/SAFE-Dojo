@@ -17,7 +17,8 @@ open Thoth.Json
 /// The different elements of the completed report.
 type Report =
     { Location : LocationResponse
-      Crimes : CrimeResponse array }
+      Crimes : CrimeResponse array
+      Weather: WeatherResponse}
 
 type ServerState = Idle | Loading | ServerError of string
 
@@ -49,11 +50,11 @@ let decoderForWeather = Decode.Auto.generateDecoder<WeatherResponse>()
 let getResponse postcode = promise {
     let! location = Fetch.fetchAs<LocationResponse> (sprintf "/api/distance/%s" postcode) decoderForLocationResponse []
     let! crimes = Fetch.tryFetchAs (sprintf "api/crime/%s" postcode) decoderForCrimeResponse [] |> Promise.map (Result.defaultValue [||])
-
+    let! weather = Fetch.tryFetchAs (sprintf "api/weather/%s" postcode) decoderForWeather []  |> Promise.map (Result .defaultValue {WeatherType= LightCloud; AverageTemperature = 0.0})
     (* Task 4.5 WEATHER: Fetch the weather from the API endpoint you created.
        Then, save its value into the Report below. You'll need to add a new
        field to the Report type first, though! *)
-    return { Location = location; Crimes = crimes } }
+    return { Location = location; Crimes = crimes ; Weather = weather} }
 
 /// The update function knows how to update the model given a message.
 let update msg model =
